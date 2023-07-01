@@ -27,6 +27,6 @@ func (h *UserHandler) Create(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, res)
 }

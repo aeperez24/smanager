@@ -3,6 +3,7 @@ package login
 import (
 	"context"
 	"net/http"
+	"smanager/internal/common"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,8 +15,10 @@ type AuthHandler struct {
 func (ah *AuthHandler) Login(c *gin.Context) {
 	request := make(map[string]string)
 	er1 := c.ShouldBindJSON(request)
+	responseDto := common.HttpResponseDto[LoginResponse]{}
+
 	if er1 != nil {
-		c.String(http.StatusInternalServerError, er1.Error())
+		c.JSON(http.StatusBadRequest, responseDto)
 		return
 	}
 	userName := request["username"]
@@ -25,14 +28,16 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 	if err != nil {
 		err, ok := err.(InvalidUserError)
 		if ok {
-			c.String(http.StatusUnauthorized, err.Error())
+			responseDto.ErrorMessage = err.Error()
+			c.JSON(http.StatusUnauthorized, responseDto)
 			return
 		}
-		c.String(http.StatusInternalServerError, "")
+		responseDto.ErrorMessage = "internal error"
+		c.JSON(http.StatusInternalServerError, responseDto)
 		return
 	}
-
-	c.JSON(http.StatusOK, LoginResponse{Token: token})
+	responseDto.Data = LoginResponse{Token: token}
+	c.JSON(http.StatusOK, responseDto)
 }
 
 type LoginResponse struct {
