@@ -2,27 +2,31 @@ package login
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"smanager/internal/common"
 
 	"github.com/gin-gonic/gin"
 )
 
-type AuthHandler struct {
+type LoginHandler struct {
 	LoginService ILoginService
 }
 
-func (ah *AuthHandler) Login(c *gin.Context) {
-	request := make(map[string]string)
-	er1 := c.ShouldBindJSON(request)
+func (ah *LoginHandler) Login(c *gin.Context) {
+	//request := make(map[string]string)
+	var request LoginRequest
+	er1 := c.ShouldBindJSON(&request)
 	responseDto := common.HttpResponseDto[LoginResponse]{}
 
 	if er1 != nil {
+		fmt.Printf("errorrrrr")
+		fmt.Println(er1.Error())
 		c.JSON(http.StatusBadRequest, responseDto)
 		return
 	}
-	userName := request["username"]
-	password := request["password"]
+	userName := request.Username
+	password := request.Password
 
 	token, err := ah.LoginService.LoginWithUsernameAndPassword(c.Request.Context(), userName, password)
 	if err != nil {
@@ -46,4 +50,8 @@ type LoginResponse struct {
 
 type ILoginService interface {
 	LoginWithUsernameAndPassword(ctx context.Context, username, password string) (string, error)
+}
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

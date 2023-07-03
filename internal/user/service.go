@@ -50,6 +50,36 @@ func (u *UserService) CreateUser(ctx context.Context, req CreateUserDTO) (*UserD
 }
 
 func (u *UserService) FindUserByUsername(ctx context.Context, username string) (*UserDTO, error) {
+	user, err := u.findUserByUsername(ctx, username)
+	if user == nil {
+		return nil, err
+	}
+	return &UserDTO{
+		Id:       int(user.ID),
+		Username: user.Username,
+	}, err
+}
+
+func (u *UserService) ValidateUsernameAndPassword(ctx context.Context, username, password string) bool {
+	user, err := u.findUserByUsername(ctx, username)
+	if err != nil {
+		return false
+	}
+	if user == nil {
+		return false
+	}
+	hasher := sha256.New()
+	hasher.Write([]byte(password))
+	hashedPassword := (hasher.Sum(nil)[:])
+	return string(hashedPassword) == user.Password
+}
+
+func (u *UserService) IsValidUser(ctx context.Context, username string) (bool, error) {
+	res, err := u.FindUserByUsername(ctx, username)
+	return res != nil, err
+}
+
+func (u *UserService) findUserByUsername(ctx context.Context, username string) (*User, error) {
 	userList := make([]User, 0)
 	builder := repository.QueriBuilder().
 		With("username", username).
@@ -64,17 +94,5 @@ func (u *UserService) FindUserByUsername(ctx context.Context, username string) (
 		return nil, nil
 	}
 
-	return &UserDTO{
-		Id:       int(userList[0].ID),
-		Username: userList[0].Username,
-	}, nil
-}
-
-func (u *UserService) ValidateUsernameAndPassword(ctx context.Context, username, Password string) bool {
-	return false
-}
-
-func (u *UserService) IsValidUser(ctx context.Context, username string) (bool, error) {
-	res, err := u.FindUserByUsername(ctx, username)
-	return res != nil, err
+	return &userList[0], nil
 }
