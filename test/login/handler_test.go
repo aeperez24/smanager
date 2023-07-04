@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"smanager/internal/common"
 	"smanager/internal/login"
 	"smanager/internal/token"
 	"smanager/internal/user"
@@ -40,7 +41,7 @@ func prepare() (*gin.Engine, fixture.DBFixture) {
 	userService := user.NewUserService(dbFixture.UserRepo)
 	tokenService := token.NewTokenService("key")
 	ls := login.NewLoginService(userService, tokenService)
-	lh := login.LoginHandler{LoginService: ls}
-	router.POST("/login", lh.Login)
+	lhc := login.NewLoginHandlerConfigProvider(ls)
+	common.RegisterRoutes(router, lhc.GetHandlers())
 	return router, dbFixture
 }

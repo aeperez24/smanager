@@ -14,14 +14,12 @@ type LoginHandler struct {
 }
 
 func (ah *LoginHandler) Login(c *gin.Context) {
-	//request := make(map[string]string)
 	var request LoginRequest
 	er1 := c.ShouldBindJSON(&request)
 	responseDto := common.HttpResponseDto[LoginResponse]{}
 
 	if er1 != nil {
-		fmt.Printf("errorrrrr")
-		fmt.Println(er1.Error())
+		fmt.Print(er1.Error())
 		c.JSON(http.StatusBadRequest, responseDto)
 		return
 	}
