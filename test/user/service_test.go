@@ -18,7 +18,9 @@ func TestCreateUser(t *testing.T) {
 	dbFixture := fixture.RunDBFixture()
 	repo := dbFixture.UserRepo
 	userService := user.NewUserService(repo)
-	userService.CreateUser(context.TODO(), user.CreateUserDTO{"username", "password"})
+	_, err := userService.CreateUser(context.TODO(), user.CreateUserDTO{"username", "password"})
+	fmt.Println(err)
+	assert.Nil(t, err)
 	userList := make([]user.User, 0)
 	paramMap := make(map[string]interface{})
 	paramMap["username"] = "username"

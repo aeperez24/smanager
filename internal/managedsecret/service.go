@@ -34,7 +34,7 @@ func (msService *ManagedSecretService) ListManagedSecret(ctx context.Context) ([
 	qbuilder := repository.QueriBuilder().With("user_id", userId)
 	err := msService.ManagedSecretRepo.FindByParams(ctx, &resultQuery, qbuilder.Build())
 	if err != nil {
-		return secretList, err
+		return secretList, fmt.Errorf("ListManagedSecret:%w", err)
 	}
 	for _, secret := range resultQuery {
 		secretList = append(secretList, ManagedSecretDto{
@@ -42,7 +42,7 @@ func (msService *ManagedSecretService) ListManagedSecret(ctx context.Context) ([
 			secret.Name,
 		})
 	}
-	return secretList, err
+	return secretList, nil
 }
 
 func (msService *ManagedSecretService) GetSecret(ctx context.Context, name string) (string, error) {
@@ -53,7 +53,7 @@ func (msService *ManagedSecretService) GetSecret(ctx context.Context, name strin
 	if len(resultQuery) > 0 {
 		return resultQuery[0].Value, nil
 	}
-	return "", err
+	return "", fmt.Errorf("GetSecret: %w", err)
 }
 func (msService *ManagedSecretService) EditManagedSecret() error {
 

@@ -32,7 +32,7 @@ func (u *UserService) CreateUser(ctx context.Context, req CreateUserDTO) (*UserD
 
 	alreadyStoredUser, err := u.FindUserByUsername(ctx, req.Username)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("CreateUser:%w", err)
 	}
 	if alreadyStoredUser != nil {
 		return nil, fmt.Errorf("username %v already exists", req.Username)
@@ -51,8 +51,11 @@ func (u *UserService) CreateUser(ctx context.Context, req CreateUserDTO) (*UserD
 
 func (u *UserService) FindUserByUsername(ctx context.Context, username string) (*UserDTO, error) {
 	user, err := u.findUserByUsername(ctx, username)
+	if(err!=nil){
+		return nil,fmt.Errorf("FindUserByUsername:%w", err)
+	}
 	if user == nil {
-		return nil, err
+		return nil, nil
 	}
 	return &UserDTO{
 		Id:       int(user.ID),
@@ -76,7 +79,7 @@ func (u *UserService) ValidateUsernameAndPassword(ctx context.Context, username,
 
 func (u *UserService) IsValidUser(ctx context.Context, username string) (bool, error) {
 	res, err := u.FindUserByUsername(ctx, username)
-	return res != nil, err
+	return res != nil, fmt.Errorf("isValidUser:%w", err)
 }
 
 func (u *UserService) findUserByUsername(ctx context.Context, username string) (*User, error) {
@@ -87,7 +90,7 @@ func (u *UserService) findUserByUsername(ctx context.Context, username string) (
 
 	err := u.userRepo.FindByParams(ctx, &userList, builder.Build())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("findUserByUsername: %w", err)
 	}
 
 	if len(userList) == 0 {

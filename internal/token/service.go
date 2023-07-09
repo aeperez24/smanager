@@ -2,6 +2,7 @@ package token
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -45,7 +46,7 @@ func (service *tokenService) ValidateToken(token string) (bool, error) {
 func (service *tokenService) GetClaims(token string) (map[string]interface{}, error) {
 	parsedToken, err := jwt.Parse(token, service.keyFunc)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetClaims:%w", err)
 	}
 
 	if !parsedToken.Valid {
