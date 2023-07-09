@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"smanager/internal/common"
+	httputil "smanager/internal/httputils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +16,7 @@ type LoginHandler struct {
 func (ah *LoginHandler) Login(c *gin.Context) {
 	var request LoginRequest
 	er1 := c.ShouldBindJSON(&request)
-	responseDto := common.HttpResponseDto[LoginResponse]{}
+	responseDto := httputil.HttpResponseDto[LoginResponse]{}
 
 	if er1 != nil {
 		fmt.Print(er1.Error())

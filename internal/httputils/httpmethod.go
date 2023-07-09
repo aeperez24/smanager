@@ -1,4 +1,4 @@
-package common
+package httputil
 
 type HttpMethod int
 

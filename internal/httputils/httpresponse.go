@@ -1,4 +1,4 @@
-package common
+package httputil
 
 type HttpResponseDto[T any] struct {
 	Data         T      `json:"data"`
