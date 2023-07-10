@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	httputil "smanager/internal/httputils"
 	"smanager/internal/login"
+	"smanager/internal/middleware"
 	"smanager/internal/token"
 	"smanager/internal/user"
 	"smanager/test/fixture"
@@ -42,6 +43,6 @@ func prepare() (*gin.Engine, fixture.DBFixture) {
 	tokenService := token.NewTokenService("key")
 	ls := login.NewLoginService(userService, tokenService)
 	lhc := login.NewLoginHandlerConfigProvider(ls)
-	httputil.RegisterRoutes(router, lhc.GetHandlers())
+	httputil.RegisterRoutesWithMiddleware(router, lhc.GetHandlers(), make(map[middleware.MiddlewareType]gin.HandlerFunc))
 	return router, dbFixture
 }
