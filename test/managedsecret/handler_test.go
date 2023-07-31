@@ -38,8 +38,12 @@ func TestManagedSecretHandlerCreateAndListSecret(t *testing.T) {
 
 }
 
-func sendRequest(router *gin.Engine, method string, bodyBuffer *bytes.Buffer) []byte {
-	req, _ := http.NewRequest(method, "/managedSecret", bodyBuffer)
+func sendRequest(router *gin.Engine, pathparam, method string, bodyBuffer *bytes.Buffer) []byte {
+	return sendRequestWithPathParam(router, "", method, bodyBuffer)
+}
+func sendRequestWithPathParam(router *gin.Engine, pathparam, method string, bodyBuffer *bytes.Buffer) []byte {
+
+	req, _ := http.NewRequest(method, "/managedSecret"+pathparam, bodyBuffer)
 	req.Header.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkIjoxLCJVc2VybmFtZSI6InVzZXJuYW1lRm9yVGVzdHMifX0.hjH5ae2it81F-D4WRHpbCp4SjBf5hmOBOAsCUEIICaY")
 	w := httptest.NewRecorder()
 
