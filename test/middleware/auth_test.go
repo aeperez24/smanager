@@ -18,7 +18,7 @@ const tokenHeaderName = "Authorization"
 const username = "username"
 const id = 1
 
-func TestTokenInformationOnContext(t *testing.T) {
+func TestSetTokenInformationIntoContext(t *testing.T) {
 	handler := newTestHandler(t)
 	router := gin.Default()
 	tokenService := token.NewTokenService("the secret")
@@ -32,9 +32,23 @@ func TestTokenInformationOnContext(t *testing.T) {
 	req.Header.Add(tokenHeaderName, token)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Result().StatusCode)
 
 }
 
+func TestReturnErrorWhenTokenIsNotValid(t *testing.T) {
+	handler := newTestHandler(t)
+	router := gin.Default()
+	tokenService := token.NewTokenService("the secret")
+	authMiddleware := auth.NewAuthMiddleware(tokenService)
+	router.POST(endpoint, authMiddleware, handler)
+	req, _ := http.NewRequest("POST", endpoint, nil)
+	req.Header.Add(tokenHeaderName, "bad token")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusUnauthorized, w.Result().StatusCode)
+
+}
 func newTestHandler(t *testing.T) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		fmt.Println(ctx.Request.Context().Value("user"))

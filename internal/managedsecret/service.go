@@ -11,6 +11,10 @@ type ManagedSecretService struct {
 	ManagedSecretRepo repository.GenericRepository[ManagedSecret]
 }
 
+func NewManagedSercertService(ManagedSecretRepo repository.GenericRepository[ManagedSecret]) *ManagedSecretService {
+	return &ManagedSecretService{ManagedSecretRepo}
+}
+
 func (msService *ManagedSecretService) CreateManagedSecret(ctx context.Context, secretName, secretValue string) error {
 	resultQuery := make([]ManagedSecret, 0)
 	userId := ctx.Value("user").(user.UserDTO).Id

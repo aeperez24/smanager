@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"net/http"
 	"smanager/internal/user"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ func NewAuthMiddleware(ts TokenClaimService) gin.HandlerFunc {
 		claims, err := ts.GetClaims(token)
 		if err != nil || claims["user"] == nil {
 			c.Abort()
+			c.JSON(http.StatusUnauthorized, "")
 			return
 		}
 
@@ -22,6 +24,8 @@ func NewAuthMiddleware(ts TokenClaimService) gin.HandlerFunc {
 		idAsFloat, okId := userInContext["Id"].(float64)
 		if !okId || !okUsername {
 			c.Abort()
+			c.JSON(http.StatusUnauthorized, "")
+
 			return
 		}
 
