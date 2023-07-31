@@ -3,7 +3,6 @@ package managedsecret
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -25,19 +24,10 @@ func TestManagedSecretHandlerCreateAndListSecret(t *testing.T) {
 		"value": "CreatedsecretValue"
 	}
 	`
-	req, _ := http.NewRequest("POST", "/managedSecret", bytes.NewBuffer([]byte(request)))
-	req.Header.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkIjoxLCJVc2VybmFtZSI6InVzZXJuYW1lRm9yVGVzdHMifX0.hjH5ae2it81F-D4WRHpbCp4SjBf5hmOBOAsCUEIICaY")
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
+	sendRequest(router, "POST", bytes.NewBuffer([]byte(request)))
 
-	fmt.Printf(w.Result().Status)
+	responseData := sendRequest(router, "GET", bytes.NewBuffer([]byte(request)))
 
-	req, _ = http.NewRequest("GET", "/managedSecret", bytes.NewBuffer([]byte(request)))
-	req.Header.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkIjoxLCJVc2VybmFtZSI6InVzZXJuYW1lRm9yVGVzdHMifX0.hjH5ae2it81F-D4WRHpbCp4SjBf5hmOBOAsCUEIICaY")
-	w = httptest.NewRecorder()
-
-	router.ServeHTTP(w, req)
-	responseData, _ := ioutil.ReadAll(w.Body)
 	var result httputils.HttpResponseDto[[]managedsecret.ManagedSecretDto]
 	json.Unmarshal(responseData, &result)
 	secretNames := make([]string, 0)
@@ -47,6 +37,17 @@ func TestManagedSecretHandlerCreateAndListSecret(t *testing.T) {
 	assert.Contains(t, secretNames, "CreatedsecretName")
 
 }
+
+func sendRequest(router *gin.Engine, method string, bodyBuffer *bytes.Buffer) []byte {
+	req, _ := http.NewRequest(method, "/managedSecret", bodyBuffer)
+	req.Header.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkIjoxLCJVc2VybmFtZSI6InVzZXJuYW1lRm9yVGVzdHMifX0.hjH5ae2it81F-D4WRHpbCp4SjBf5hmOBOAsCUEIICaY")
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+	responseData, _ := ioutil.ReadAll(w.Body)
+	return responseData
+}
+
 func prepare() (*gin.Engine, fixture.DBFixture) {
 	dbFixture := fixture.RunDBFixture()
 	router := gin.Default()
