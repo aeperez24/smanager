@@ -17,6 +17,14 @@ type HandlerProvider interface {
 	GetHandlers() []HandlerConfig
 }
 
+type HandlerProviderBase struct {
+	HandlersConfigs []HandlerConfig
+}
+
+func (lp *HandlerProviderBase) GetHandlers() []HandlerConfig {
+	return lp.HandlersConfigs
+}
+
 func RegisterRoutes(engine *gin.Engine, handlers []HandlerConfig) {
 	methodMap := toMethodMap(engine)
 	for _, handler := range handlers {

@@ -1,19 +1,13 @@
 package login
 
-import httputil "smanager/internal/httputils"
+import (
+	"smanager/internal/httputils"
+)
 
-type LoginHandlerConfigProvider struct {
-	handlersConfigs []httputil.HandlerConfig
-}
-
-func (lp *LoginHandlerConfigProvider) GetHandlers() []httputil.HandlerConfig {
-	return lp.handlersConfigs
-}
-
-func NewLoginHandlerConfigProvider(loginService ILoginService) *LoginHandlerConfigProvider {
+func NewLoginHandlerConfigProvider(loginService ILoginService) httputils.HandlerProvider {
 	lh := &LoginHandler{loginService}
-	handlersConfigs := []httputil.HandlerConfig{
-		{Route: "/login", Method: httputil.POST, Handler: lh.Login}}
+	handlersConfigs := []httputils.HandlerConfig{
+		{Route: "/login", Method: httputils.POST, Handler: lh.Login}}
 
-	return &LoginHandlerConfigProvider{handlersConfigs: handlersConfigs}
+	return &httputils.HandlerProviderBase{HandlersConfigs: handlersConfigs}
 }

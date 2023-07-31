@@ -38,7 +38,7 @@ func TestManagedSecretHandlerCreateAndListSecret(t *testing.T) {
 
 }
 
-func sendRequest(router *gin.Engine, pathparam, method string, bodyBuffer *bytes.Buffer) []byte {
+func sendRequest(router *gin.Engine, method string, bodyBuffer *bytes.Buffer) []byte {
 	return sendRequestWithPathParam(router, "", method, bodyBuffer)
 }
 func sendRequestWithPathParam(router *gin.Engine, pathparam, method string, bodyBuffer *bytes.Buffer) []byte {
