@@ -16,7 +16,7 @@ type IManagedSecretService interface {
 	CreateManagedSecret(ctx context.Context, secretName, secretValue string) error
 	ListManagedSecret(ctx context.Context) ([]ManagedSecretDto, error)
 	GetSecret(ctx context.Context, name string) (string, error)
-	EditManagedSecret() error
+	EditManagedSecret(ctx context.Context, name, value string) error
 }
 
 func (msh *ManagedSecretHandler) CreateManagedSecret(c *gin.Context) {
@@ -67,6 +67,20 @@ func (msh *ManagedSecretHandler) GetSecret(c *gin.Context) {
 }
 
 func (msh *ManagedSecretHandler) EditManagedSecret(c *gin.Context) {
+	var request CreateManagedSecretRequest
+	er1 := c.ShouldBindJSON(&request)
+	if er1 != nil {
+		fmt.Print(er1.Error())
+		c.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	err2 := msh.ManagedSecretServ.EditManagedSecret(c.Request.Context(), request.Name, request.Value)
+	if err2 != nil {
+		fmt.Print(er1.Error())
+		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	c.JSON(http.StatusOK, nil)
 }
 
 type CreateManagedSecretRequest struct {

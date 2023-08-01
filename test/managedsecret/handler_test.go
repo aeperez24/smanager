@@ -3,6 +3,7 @@ package managedsecret
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -45,6 +46,24 @@ func TestManagedSecretHandlerGet(t *testing.T) {
 	var result httputils.HttpResponseDto[string]
 	json.Unmarshal(responseData, &result)
 	assert.Equal(t, fixture.TEST_SECRET_VALUE_1, result.Data)
+}
+
+func TestManagedSecretHandlerUpdate(t *testing.T) {
+	router, _ := prepare()
+	request := fmt.Sprintf(`
+	{
+		"name": "%s",
+		"value": "%s"
+	}
+	`, fixture.TEST_SECRET_NAME_1, "newValue")
+	sendRequest(router, "PUT", bytes.NewBuffer([]byte(request)))
+	pathParam := "/" + fixture.TEST_SECRET_NAME_1
+	responseData := sendRequestWithPathParam(router, pathParam, "GET", bytes.NewBuffer([]byte("")))
+
+	var result httputils.HttpResponseDto[string]
+	json.Unmarshal(responseData, &result)
+	assert.Equal(t, "newValue", result.Data)
+
 }
 
 func sendRequest(router *gin.Engine, method string, bodyBuffer *bytes.Buffer) []byte {

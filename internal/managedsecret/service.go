@@ -59,8 +59,23 @@ func (msService *ManagedSecretService) GetSecret(ctx context.Context, name strin
 	}
 	return "", fmt.Errorf("GetSecret: %w", err)
 }
-func (msService *ManagedSecretService) EditManagedSecret() error {
+func (msService *ManagedSecretService) EditManagedSecret(ctx context.Context, name, value string) error {
+	userId := ctx.Value("user").(user.UserDTO).Id
+	qbuilder := repository.QueriBuilder().With("user_id", userId).With("name", name)
+	resultQuery := make([]ManagedSecret, 0)
+	err := msService.ManagedSecretRepo.FindByParams(ctx, &resultQuery, qbuilder.Build())
+	if err != nil {
+		return fmt.Errorf("EdigManagedSecret %w", err)
+	}
 
+	if len(resultQuery) == 0 {
+		return fmt.Errorf("Secret value not found")
+	}
+	resultQuery[0].Value = value
+	err = msService.ManagedSecretRepo.Save(ctx, &resultQuery[0])
+	if err != nil {
+		return fmt.Errorf("EdigManagedSecret %w", err)
+	}
 	return nil
 }
 

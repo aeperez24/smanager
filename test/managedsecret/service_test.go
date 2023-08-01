@@ -67,3 +67,19 @@ func TestGetManagedSecrets(t *testing.T) {
 	assert.Equal(t, fixture.TEST_SECRET_VALUE_1, secret)
 
 }
+
+func TestUpdateManagedSecrets(t *testing.T) {
+	newSecretValue := "newValue"
+	dbFixture := fixture.RunDBFixture()
+	repo := dbFixture.ManagedSecretRepo
+	mgService := &managedsecret.ManagedSecretService{ManagedSecretRepo: repo}
+	ctx := context.WithValue(context.TODO(), "user", user.UserDTO{
+		Id:       1,
+		Username: fixture.TEST_USERNAME,
+	})
+	err := mgService.EditManagedSecret(ctx, fixture.TEST_SECRET_NAME_1, newSecretValue)
+	assert.Nil(t, err)
+	editedSecret, _ := mgService.GetSecret(ctx, fixture.TEST_SECRET_NAME_1)
+	assert.Equal(t, newSecretValue, editedSecret)
+
+}
