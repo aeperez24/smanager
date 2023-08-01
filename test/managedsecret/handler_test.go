@@ -38,6 +38,15 @@ func TestManagedSecretHandlerCreateAndListSecret(t *testing.T) {
 
 }
 
+func TestManagedSecretHandlerGet(t *testing.T) {
+	router, _ := prepare()
+	pathParam := "/secretName1"
+	responseData := sendRequestWithPathParam(router, pathParam, "GET", bytes.NewBuffer([]byte("")))
+	var result httputils.HttpResponseDto[string]
+	json.Unmarshal(responseData, &result)
+	assert.Equal(t, fixture.TEST_SECRET_VALUE_1, result.Data)
+}
+
 func sendRequest(router *gin.Engine, method string, bodyBuffer *bytes.Buffer) []byte {
 	return sendRequestWithPathParam(router, "", method, bodyBuffer)
 }
