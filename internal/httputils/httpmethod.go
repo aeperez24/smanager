@@ -8,3 +8,7 @@ const (
 	PUT
 	DELETE
 )
+
+func (httpMethod HttpMethod) String() string {
+	return []string{"GET", "POST", "PUT", "DELETE"}[httpMethod]
+}
