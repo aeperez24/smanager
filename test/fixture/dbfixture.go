@@ -3,6 +3,7 @@ package fixture
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"smanager/config/db"
 	"smanager/config/repository"
 	"smanager/internal/managedsecret"
@@ -42,7 +43,7 @@ func prepareUsers(DB *gorm.DB) {
 
 	userRepo.Save(context.TODO(), &user.User{
 		Username: TEST_USERNAME,
-		Password: string(hasher.Sum(nil)[:]),
+		Password: hex.EncodeToString(hasher.Sum(nil)[:]),
 		Enabled:  true,
 	})
 }

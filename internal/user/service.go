@@ -17,8 +17,8 @@ func NewUserService(repo repository.GenericRepository[User]) *UserService {
 }
 
 type CreateUserDTO struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 type UserDTO struct {
 	Id       int
@@ -51,8 +51,8 @@ func (u *UserService) CreateUser(ctx context.Context, req CreateUserDTO) (*UserD
 
 func (u *UserService) FindUserByUsername(ctx context.Context, username string) (*UserDTO, error) {
 	user, err := u.findUserByUsername(ctx, username)
-	if(err!=nil){
-		return nil,fmt.Errorf("FindUserByUsername:%w", err)
+	if err != nil {
+		return nil, fmt.Errorf("FindUserByUsername:%w", err)
 	}
 	if user == nil {
 		return nil, nil
@@ -74,7 +74,7 @@ func (u *UserService) ValidateUsernameAndPassword(ctx context.Context, username,
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	hashedPassword := (hasher.Sum(nil)[:])
-	return string(hashedPassword) == user.Password
+	return hex.EncodeToString(hashedPassword) == user.Password
 }
 
 func (u *UserService) IsValidUser(ctx context.Context, username string) (bool, error) {
