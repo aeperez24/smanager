@@ -17,6 +17,14 @@ func DbSqliteConnection() *gorm.DB {
 	return db
 }
 
+func DbSqliteConnectionWithFile(fileName string) *gorm.DB {
+	db, err := gorm.Open(sqlite.Open(fileName), &gorm.Config{})
+
+	if err != nil {
+		panic("failed to connect database")
+	}
+	return db
+}
 func Migrate(db *gorm.DB) {
 	models := [...]interface{}{
 		&user.User{},

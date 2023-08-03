@@ -1,16 +1,17 @@
 package user
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
-	service *UserService
+	service IUserService
 }
 
-func NewUserHandler(service *UserService) *UserHandler {
+func NewUserHandler(service IUserService) *UserHandler {
 	return &UserHandler{service: service}
 }
 
@@ -29,4 +30,8 @@ func (h *UserHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, res)
+}
+
+type IUserService interface {
+	CreateUser(ctx context.Context, req CreateUserDTO) (*UserDTO, error)
 }
