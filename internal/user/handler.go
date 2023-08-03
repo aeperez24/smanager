@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"net/http"
+	"smanager/internal/httputils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,18 +19,22 @@ func NewUserHandler(service IUserService) *UserHandler {
 func (h *UserHandler) Create(c *gin.Context) {
 	var createUserRequest CreateUserDTO
 	er1 := c.ShouldBindJSON(&createUserRequest)
+	var response httputils.HttpResponseDto[*UserDTO]
 	if er1 != nil {
-		c.String(http.StatusInternalServerError, er1.Error())
+		response.ErrorMessage = er1.Error()
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
 	res, err := h.service.CreateUser(c.Request.Context(), createUserRequest)
 	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
+		response.ErrorMessage = err.Error()
+		c.JSON(http.StatusInternalServerError, response)
 		return
-	}
 
-	c.JSON(http.StatusOK, res)
+	}
+	response.Data = res
+	c.JSON(http.StatusOK, response)
 }
 
 type IUserService interface {

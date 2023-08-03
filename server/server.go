@@ -6,6 +6,8 @@ import (
 	"smanager/internal/httputils"
 	"smanager/internal/login"
 	"smanager/internal/managedsecret"
+	"smanager/internal/middleware"
+	"smanager/internal/middleware/auth"
 	"smanager/internal/token"
 	"smanager/internal/user"
 
@@ -28,6 +30,10 @@ func NewServer() *gin.Engine {
 	tokenService := token.NewTokenService("my internal secret key//TODO MOVE TO ENV VAR")
 	loginService := login.NewLoginService(userService, tokenService)
 
+	//Middlewares
+	middlewareMaps := map[middleware.MiddlewareType]gin.HandlerFunc{
+		middleware.Secured: auth.NewAuthMiddleware(tokenService),
+	}
 	//handlers configuration
 	handlersConfigs := []httputils.HandlerProvider{
 		managedsecret.NewHandlerConfigProvider(managedSecretService),
@@ -38,7 +44,7 @@ func NewServer() *gin.Engine {
 	//handlers register
 
 	for _, handlerConfig := range handlersConfigs {
-		httputils.RegisterRoutes(r, handlerConfig.GetHandlers())
+		httputils.RegisterRoutesWithMiddleware(r, handlerConfig.GetHandlers(), middlewareMaps)
 	}
 	return r
 }
