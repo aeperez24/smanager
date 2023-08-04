@@ -77,11 +77,6 @@ func (u *UserService) ValidateUsernameAndPassword(ctx context.Context, username,
 	return hex.EncodeToString(hashedPassword) == user.Password
 }
 
-func (u *UserService) IsValidUser(ctx context.Context, username string) (bool, error) {
-	res, err := u.FindUserByUsername(ctx, username)
-	return res != nil, fmt.Errorf("isValidUser:%w", err)
-}
-
 func (u *UserService) findUserByUsername(ctx context.Context, username string) (*User, error) {
 	userList := make([]User, 0)
 	builder := repository.QueriBuilder().

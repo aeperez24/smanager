@@ -25,12 +25,6 @@ func (lp *HandlerProviderBase) GetHandlers() []HandlerConfig {
 	return lp.HandlersConfigs
 }
 
-func RegisterRoutes(engine *gin.Engine, handlers []HandlerConfig) {
-	for _, handler := range handlers {
-		engine.Handle(handler.Method.String(), handler.Route, handler.Handler)
-	}
-}
-
 func RegisterRoutesWithMiddleware(engine *gin.Engine, handlers []HandlerConfig, middlewares map[middleware.MiddlewareType]gin.HandlerFunc) {
 	for _, handler := range handlers {
 

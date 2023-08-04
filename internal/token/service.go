@@ -35,14 +35,6 @@ func (service *tokenService) CreateToken(claims map[string]interface{}) (string,
 	return token.SignedString([]byte(service.secretKey))
 }
 
-func (service *tokenService) ValidateToken(token string) (bool, error) {
-	parsedToken, err := jwt.Parse(token, service.keyFunc)
-	if err != nil {
-		return false, err
-	}
-	return parsedToken.Valid, nil
-}
-
 func (service *tokenService) GetClaims(token string) (map[string]interface{}, error) {
 	parsedToken, err := jwt.Parse(token, service.keyFunc)
 	if err != nil {
