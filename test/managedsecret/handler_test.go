@@ -25,7 +25,7 @@ func TestManagedSecretHandlerCreateAndListSecret(t *testing.T) {
 		"value": "CreatedsecretValue"
 	}
 	`
-	sendRequest(router, "POST", bytes.NewBuffer([]byte(request)))
+	responsePostRequest := sendRequest(router, "POST", bytes.NewBuffer([]byte(request)))
 
 	responseData := sendRequest(router, "GET", bytes.NewBuffer([]byte(request)))
 
@@ -36,6 +36,10 @@ func TestManagedSecretHandlerCreateAndListSecret(t *testing.T) {
 		secretNames = append(secretNames, secret.Name)
 	}
 	assert.Contains(t, secretNames, "CreatedsecretName")
+
+	var parsedResponse httputils.HttpResponseDto[managedsecret.CreateManagedSecretResponse]
+	json.Unmarshal(responsePostRequest, &parsedResponse)
+	assert.Equal(t, "CreatedsecretName", parsedResponse.Data.Name)
 
 }
 
