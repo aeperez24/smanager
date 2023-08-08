@@ -57,14 +57,13 @@ func (msh *ManagedSecretHandler) ListManagedSecret(c *gin.Context) {
 func (msh *ManagedSecretHandler) GetSecret(c *gin.Context) {
 	secretName := c.Param("name")
 	svalue, err := msh.ManagedSecretServ.GetSecret(c.Request.Context(), secretName)
+	responseDto := httputils.HttpResponseDto[string]{}
 	if err != nil {
 		fmt.Println(fmt.Errorf("GetSecret %w", err))
 		c.JSON(http.StatusInternalServerError, nil)
 		return
 	}
-	responseDto := httputils.HttpResponseDto[string]{
-		Data: svalue,
-	}
+	responseDto.Data = svalue
 	c.JSON(http.StatusOK, responseDto)
 
 }

@@ -22,7 +22,7 @@ func (h *UserHandler) Create(c *gin.Context) {
 	var response httputils.HttpResponseDto[*UserDTO]
 	if er1 != nil {
 		response.ErrorMessage = er1.Error()
-		c.JSON(http.StatusInternalServerError, response)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
